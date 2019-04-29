@@ -7,11 +7,10 @@ from game import Game
 my_game = Game("char", "sam")
 
 
-for i in range(0,1):
+for i in range(0, 1):
     my_game.deal()
     my_game.score()
     print(my_game)
-
 
 
 # main loop
