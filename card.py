@@ -98,6 +98,9 @@ class Card(object):
 
     @staticmethod
     def score_hand(cards):
+        """
+        assumes the cut card is always the last card passed in
+        """
         flush_score = 0
         if Card.flush_check(cards):
             flush_score = len(cards)
