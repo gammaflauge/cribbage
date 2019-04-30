@@ -54,12 +54,7 @@ class Card(object):
             raise RuntimeWarning("flush_check received a list of len 1")
 
         fifteens = 0
-        ranks = []
-        for card in cards:
-            if card.rank > 10:
-                ranks.append(10)
-            else:
-                ranks.append(card.rank)
+        ranks = [card.rank if card.rank < 10 else 10 for card in cards]
 
         for i in range(2, len(ranks) + 1):
             for combo in combinations(ranks, i):
