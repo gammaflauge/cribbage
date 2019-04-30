@@ -1,13 +1,7 @@
 from itertools import combinations
 
 
-rank_display = {
-    1: 'A',
-    10: 'T',
-    11: 'J',
-    12: 'Q',
-    13: 'K',
-}
+rank_display = {1: "A", 10: "T", 11: "J", 12: "Q", 13: "K"}
 
 
 class Card(object):
@@ -49,8 +43,7 @@ class Card(object):
         pairs = 0
         for i in range(0, len(cards) - 1):
             my_rank = cards[i].rank
-            pairs = pairs + len(
-                [c for c in cards[i+1:] if c.rank == my_rank])
+            pairs = pairs + len([c for c in cards[i + 1 :] if c.rank == my_rank])
         return pairs
 
     @staticmethod
@@ -78,30 +71,44 @@ class Card(object):
 
     @staticmethod
     def run_count(cards):
-        if not isinstance(cards, list):
-            raise RuntimeError("run_count needs a list")
+        all_ranks = [card.rank for card in cards]
+        uniq_ranks = sorted(set(all_ranks))
 
-        print(cards)
-        if Card._check_if_run(cards):
-            print(f"returning: { len(cards) } for { cards }")
-            return len(cards)
-        elif len(cards) == 3:
-            return 0
-        else:
-            run_count = 0
-            for combo in combinations(cards, len(cards) - 1):
-                print(combo)
-                run_count += Card.run_count(list(combo))
-            return run_count
+        run = []
+        run_len_to_find = len(uniq_ranks)
+        while run_len_to_find >= 3 and len(run) == 0:
+            for start_card in range(0, len(uniq_ranks) - run_len_to_find + 1):
+                sub_hand = uniq_ranks[start_card : start_card + run_len_to_find]
+                if Card._check_if_run(sub_hand):
+                    run = sub_hand
+            run_len_to_find -= 1
+
+        multiplier = 1
+        for rank in run:
+            multiplier *= all_ranks.count(rank)
+
+        # print(f"all done: { cards } -> { len(run) } * { multiplier } = { len(run) * multiplier }")
+        return len(run) * multiplier
 
     @staticmethod
-    def _check_if_run(cards):
-        if len(cards) < 3:
+    def _check_if_run(ranks):
+        if len(ranks) < 3:
             return False
 
-        ranks = sorted([card.rank for card in cards])
         for i in range(1, len(ranks)):
-            if ranks[i] - ranks[i-1] != 1:
+            if ranks[i] - ranks[i - 1] != 1:
                 return False
 
         return True
+
+    @staticmethod
+    def score_hand(cards):
+        flush_score = 0
+        if Card.flush_check(cards):
+            flush_score = len(cards)
+        pair_score = 2 * Card.pair_count(cards)
+        fifteen_score = 2 * Card.fifteen_count(cards)
+        run_score = Card.run_count(cards)
+        # print(f"{ cards } -> { flush_score } + { pair_score } + { fifteen_score } + { run_score }")
+        total_score = flush_score + pair_score + fifteen_score + run_score
+        return total_score
