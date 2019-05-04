@@ -43,7 +43,8 @@ class Card(object):
         pairs = 0
         for i in range(0, len(cards) - 1):
             my_rank = cards[i].rank
-            pairs = pairs + len([c for c in cards[i + 1 :] if c.rank == my_rank])
+            pairs = pairs + \
+                len([c for c in cards[i + 1:] if c.rank == my_rank])
         return pairs
 
     @staticmethod
@@ -73,7 +74,7 @@ class Card(object):
         run_len_to_find = len(uniq_ranks)
         while run_len_to_find >= 3 and len(run) == 0:
             for start_card in range(0, len(uniq_ranks) - run_len_to_find + 1):
-                sub_hand = uniq_ranks[start_card : start_card + run_len_to_find]
+                sub_hand = uniq_ranks[start_card: start_card + run_len_to_find]
                 if Card._check_if_run(sub_hand):
                     run = sub_hand
             run_len_to_find -= 1
@@ -90,10 +91,10 @@ class Card(object):
         if len(ranks) < 3:
             return False
 
+        ranks = sorted(ranks)
         for i in range(1, len(ranks)):
             if ranks[i] - ranks[i - 1] != 1:
                 return False
-
         return True
 
     @staticmethod

@@ -81,6 +81,13 @@ class TestCard(unittest.TestCase):
         self.assertEqual(Card.fifteen_count(self.hand_77889), 4)
         self.assertEqual(Card.fifteen_count(self.hand_TJQK_unsuited), 0)
         self.assertEqual(Card.fifteen_count(self.hand_5555), 4)
+    
+    def test_check_if_run(self):
+        self.assertTrue(Card._check_if_run([1, 2, 3, 4, 5]))
+        self.assertTrue(Card._check_if_run([5, 4, 3, 2, 1]))
+        self.assertFalse(Card._check_if_run([1, 2]))
+        self.assertTrue(Card._check_if_run([2, 1, 3]))
+        self.assertFalse(Card._check_if_run([1, 2, 4]))
 
     def test_run_count(self):
         self.assertEqual(Card.run_count(self.hand_5555), 0)
