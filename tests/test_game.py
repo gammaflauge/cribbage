@@ -85,6 +85,20 @@ class TestGame(unittest.TestCase):
                 for player in game.players:
                     self.assertEqual(len(player.hand), 4)
                 self.assertEqual(len(game.crib), 4)
+                game.clean_up_hand()
+
+    def test_clean_up_hand(self):
+        game = self.game_2p
+
+        game.players[0].hand = game.deck[:4]
+        game.players[1].hand = game.deck[14:18]
+        game.cut_card = game.deck[5]
+        game.crib = game.deck[-4:]
+        game.clean_up_hand()
+        self.assertListEqual(game.players[0].hand, [])
+        self.assertListEqual(game.players[1].hand, [])
+        self.assertListEqual(game.crib, [])
+        self.assertIsNone(game.cut_card)
 
     def test_score(self):
         random.seed(512019)
@@ -92,7 +106,7 @@ class TestGame(unittest.TestCase):
         self.game_4p.throw_to_crib()
         self.game_4p.cut()
         self.game_4p.score()
-
+        self.game_4p.clean_up_hand()
         self.assertEqual(self.game_4p.players[0].score, 6)
         self.assertEqual(self.game_4p.players[1].score, 10)
         self.assertEqual(self.game_4p.players[2].score, 2)
@@ -102,6 +116,7 @@ class TestGame(unittest.TestCase):
         self.game_4p.throw_to_crib()
         self.game_4p.cut()
         self.game_4p.score()
+        self.game_4p.clean_up_hand()
         self.assertEqual(self.game_4p.players[0].score, 12)
         self.assertEqual(self.game_4p.players[1].score, 24)
         self.assertEqual(self.game_4p.players[2].score, 7)

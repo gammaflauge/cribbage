@@ -41,8 +41,7 @@ class Game(object):
         )
 
     def deal(self):
-        self.crib = []
-        self.cut_card = None
+
         random.shuffle(self.deck)
         self.hand_number = self.hand_number + 1
         for pnum, player in enumerate(self.players):
@@ -66,18 +65,29 @@ class Game(object):
     def score(self):
         for i in range(0, len(self.players)):
             # add 1 to players index so that we count dealer last
-            player = self.players[(i + self.dealer_seat + 1) %
-                                  len(self.players)]
+            player_to_count = (i + self.dealer_seat + 1) % len(self.players)
+            player = self.players[player_to_count]
             player.update_score(Card.score_hand(player.hand + [self.cut_card]))
             if self.check_if_winner(player):
                 self.game_over = True
                 break  # stop counting immediately
-            if i == self.dealer_seat:
+            if player_to_count == self.dealer_seat:
                 player.update_score(Card.score_hand(
                     self.crib + [self.cut_card]))
                 if self.check_if_winner(player):
                     self.game_over = True
                     break  # stop counting immediately
 
+    def clean_up_hand(self):
+        self.dealer_seat = (self.dealer_seat + 1) % len(self.players)
+        for player in self.players:
+            player.hand = []
+        self.cut_card = None
+        self.crib = []
+
     def check_if_winner(self, player):
         return player.score >= self.goal_score
+
+    def sim_game(self):
+        while not self.game_over:
+            self.deal()
