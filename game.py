@@ -65,12 +65,19 @@ class Game(object):
 
     def score(self):
         for i in range(0, len(self.players)):
+            # add 1 to players index so that we count dealer last
             player = self.players[(i + self.dealer_seat + 1) %
-                                  len(self.players)]  # add 1 because we count dealer last
+                                  len(self.players)]
             player.update_score(Card.score_hand(player.hand + [self.cut_card]))
             if self.check_for_winner(player):
                 self.game_over = True
                 break  # stop counting immediately
+            if i == self.dealer_seat:
+                player.update_score(Card.score_hand(
+                    self.crib + [self.cut_card]))
+                if self.check_for_winner(player):
+                    self.game_over = True
+                    break  # stop counting immediately
 
     def check_for_winner(self, player):
         return player.score >= self.goal_score
