@@ -108,6 +108,34 @@ class TestGame(unittest.TestCase):
         self.assertEqual(self.game_4p.players[2].score, 7)
         self.assertEqual(self.game_4p.players[3].score, 11)
 
+    def test_score_at_endgame(self):
+        random.seed(512019)
+        # p1 should score 6 points game 1, 6 points game 2
+        # p2 should score 12 points game 1 w/knobs, not get to score game 2
+        p1 = self.game_2p.players[0]
+        p2 = self.game_2p.players[1]
+
+        p1.score = 115
+        self.assertFalse(self.game_2p.game_over)
+        self.game_2p.dealer_seat = 1
+        self.game_2p.deal()
+        self.game_2p.throw_to_crib()
+        self.game_2p.cut()
+        self.game_2p.score()
+        print(self.game_2p)
+        self.assertFalse(self.game_2p.game_over)
+        self.assertEqual(p1.score, 119)
+        self.assertEqual(p2.score, 12)
+
+        self.game_2p.dealer_seat = 1
+        self.game_2p.deal()
+        self.game_2p.throw_to_crib()
+        self.game_2p.cut()
+        self.game_2p.score()
+        self.assertTrue(self.game_2p.game_over)
+        self.assertEqual(p1.score, 125)
+        self.assertEqual(p2.score, 12)
+
     def test_check_for_winner(self):
         p1 = self.game_1p.players[0]
         self.assertEqual(p1.score, 0)

@@ -11,6 +11,7 @@ class Game(object):
         self.cut_card = None
         self.crib = []
         self.goal_score = 120
+        self.game_over = False
 
         self.deck = []
         for suit in ["C", "D", "H", "S"]:
@@ -64,8 +65,12 @@ class Game(object):
 
     def score(self):
         for i in range(0, len(self.players)):
-            player = self.players[(i + self.dealer_seat) % len(self.players)]
+            player = self.players[(i + self.dealer_seat + 1) %
+                                  len(self.players)]  # add 1 because we count dealer last
             player.update_score(Card.score_hand(player.hand + [self.cut_card]))
+            if self.check_for_winner(player):
+                self.game_over = True
+                break  # stop counting immediately
 
     def check_for_winner(self, player):
         return player.score >= self.goal_score
