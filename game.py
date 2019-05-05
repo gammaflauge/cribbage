@@ -50,7 +50,7 @@ class Game(object):
     def cut(self):
         self.cut_card = self.deck[-1]
         if self.cut_card.rank == 11:
-            self.players[self.dealer_seat].score += 2
+            self.players[self.dealer_seat].update_score(2)
 
     def throw_to_crib(self):
         for player in self.players:
@@ -62,5 +62,6 @@ class Game(object):
             self.crib += self.deck[-2:-1]  # -1 is the cut card
 
     def score(self):
-        for player in self.players:
-            player.score += Card.score_hand(player.hand + [self.cut_card])
+        for i in range(0, len(self.players)):
+            player = self.players[(i + self.dealer_seat) % len(self.players)]
+            player.update_score(Card.score_hand(player.hand + [self.cut_card]))
