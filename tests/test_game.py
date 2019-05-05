@@ -134,13 +134,13 @@ class TestGame(unittest.TestCase):
         self.assertEqual(p1.score, 125)
         self.assertEqual(p2.score, 17)
 
-    def test_check_for_winner(self):
+    def test_check_if_winner(self):
         p1 = self.game_1p.players[0]
         self.assertEqual(p1.score, 0)
-        self.assertFalse(self.game_1p.check_for_winner(p1))
+        self.assertFalse(self.game_1p.check_if_winner(p1))
         self.game_1p.players[0].score = 119
-        self.assertFalse(self.game_1p.check_for_winner(p1))
+        self.assertFalse(self.game_1p.check_if_winner(p1))
         self.game_1p.players[0].score = 120
-        self.assertTrue(self.game_1p.check_for_winner(p1))
+        self.assertTrue(self.game_1p.check_if_winner(p1))
         self.game_1p.players[0].score = 121
-        self.assertTrue(self.game_1p.check_for_winner(p1))
+        self.assertTrue(self.game_1p.check_if_winner(p1))

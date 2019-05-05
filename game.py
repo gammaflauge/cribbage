@@ -69,15 +69,15 @@ class Game(object):
             player = self.players[(i + self.dealer_seat + 1) %
                                   len(self.players)]
             player.update_score(Card.score_hand(player.hand + [self.cut_card]))
-            if self.check_for_winner(player):
+            if self.check_if_winner(player):
                 self.game_over = True
                 break  # stop counting immediately
             if i == self.dealer_seat:
                 player.update_score(Card.score_hand(
                     self.crib + [self.cut_card]))
-                if self.check_for_winner(player):
+                if self.check_if_winner(player):
                     self.game_over = True
                     break  # stop counting immediately
 
-    def check_for_winner(self, player):
+    def check_if_winner(self, player):
         return player.score >= self.goal_score
