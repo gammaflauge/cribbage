@@ -7,6 +7,7 @@ from player import Player
 class Game(object):
     def __init__(self, player_names):
         self.hand_number = 0
+        self.dealer_seat = 0
         self.cut_card = None
         self.crib = []
 
@@ -39,12 +40,17 @@ class Game(object):
 
     def deal(self):
         self.crib = []
+        self.cut_card = None
         random.shuffle(self.deck)
         self.hand_number = self.hand_number + 1
         for pnum, player in enumerate(self.players):
             player.hand = self.deck[pnum * self.cards_per_player:pnum *
                                     self.cards_per_player + self.cards_per_player]
+
+    def cut(self):
         self.cut_card = self.deck[-1]
+        if self.cut_card.rank == 11:
+            self.players[self.dealer_seat].score += 2
 
     def throw_to_crib(self):
         for player in self.players:
