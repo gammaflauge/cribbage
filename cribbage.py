@@ -4,9 +4,8 @@ import random
 from game import Game
 from player import Player
 
-sam = Player("sam")
-char = Player("char")
-my_game = Game(char, sam)
+
+my_game = Game(['char', 'sam'])
 
 best_game = str(my_game)
 best_score = 0
@@ -14,14 +13,14 @@ all_scores = {}
 
 for i in range(0, 100000):
     # print(f"Hand Number { i }")
-    pre_score = my_game.player1.score
+    pre_score = my_game.players[0].score
     my_game.deal()
     my_game.throw_to_crib()
 
     my_game.score()
     # print(my_game)
 
-    game_score = my_game.player1.score - pre_score
+    game_score = my_game.players[0].score - pre_score
     if game_score in all_scores.keys():
         all_scores[game_score] += 1
     else:
@@ -30,7 +29,7 @@ for i in range(0, 100000):
     if game_score > best_score:
         best_score = game_score
         best_game = str(my_game)
-    
+
 print(f"best game = { best_score }")
 print(best_game)
 
