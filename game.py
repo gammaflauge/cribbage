@@ -41,17 +41,11 @@ class Game(object):
         )
 
     def deal(self):
-
         random.shuffle(self.deck)
         self.hand_number = self.hand_number + 1
         for pnum, player in enumerate(self.players):
             player.hand = self.deck[pnum * self.cards_per_player:pnum *
                                     self.cards_per_player + self.cards_per_player]
-
-    def cut(self):
-        self.cut_card = self.deck[-1]
-        if self.cut_card.rank == 11:
-            self.players[self.dealer_seat].update_score(2)
 
     def throw_to_crib(self):
         for player in self.players:
@@ -61,6 +55,11 @@ class Game(object):
             self.crib += self.deck[-3:-1]  # -1 is the cut card
         elif len(self.crib) == 3:
             self.crib += self.deck[-2:-1]  # -1 is the cut card
+
+    def cut(self):
+        self.cut_card = self.deck[-1]
+        if self.cut_card.rank == 11:
+            self.players[self.dealer_seat].update_score(2)
 
     def score(self):
         for i in range(0, len(self.players)):
@@ -90,4 +89,8 @@ class Game(object):
 
     def sim_game(self):
         while not self.game_over:
+            self.clean_up_hand()
             self.deal()
+            self.throw_to_crib()
+            self.cut()
+            self.score()

@@ -159,3 +159,13 @@ class TestGame(unittest.TestCase):
         self.assertTrue(self.game_1p.check_if_winner(p1))
         self.game_1p.players[0].score = 121
         self.assertTrue(self.game_1p.check_if_winner(p1))
+
+    def test_sim_game(self):
+        random.seed(512019)
+        for game in self.all_games:
+            game.sim_game()
+            found_winner = False
+            for player in game.players:
+                if player.score >= game.goal_score:
+                    found_winner = True
+            self.assertTrue(found_winner)
