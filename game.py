@@ -44,8 +44,9 @@ class Game(object):
         random.shuffle(self.deck)
         self.hand_number = self.hand_number + 1
         for pnum, player in enumerate(self.players):
-            player.hand = self.deck[pnum * self.cards_per_player:pnum *
-                                    self.cards_per_player + self.cards_per_player]
+            index_card = pnum * self.cards_per_player
+            player.hand = self.deck[index_card:index_card +
+                                    self.cards_per_player]
 
     def throw_to_crib(self):
         for player in self.players:
