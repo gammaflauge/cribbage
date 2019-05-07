@@ -111,3 +111,14 @@ class Card(object):
         # print(f"{ cards } -> { flush_score } + { pair_score } + { fifteen_score } + { run_score }")
         total_score = flush_score + pair_score + fifteen_score + run_score
         return total_score
+
+    @staticmethod
+    def build_deck():
+        """
+        build and return a stand 52-card deck.
+        """
+        deck = []
+        for suit in ["C", "D", "H", "S"]:
+            for rank in range(1, 14):
+                deck.append(Card(rank, suit))
+        return deck

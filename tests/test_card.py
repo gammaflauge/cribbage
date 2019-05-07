@@ -13,9 +13,12 @@ class TestCard(unittest.TestCase):
         self.all_diamonds = self.deck[13:26]
         self.all_hearts = self.deck[26:39]
         self.all_spades = self.deck[39:]
-        self.hand_5555 = [Card(5, "C"), Card(5, "D"), Card(5, "H"), Card(5, "S")]
-        self.hand_6789_suited = [Card(6, "C"), Card(7, "C"), Card(8, "C"), Card(9, "C")]
-        self.hand_Q9T8J = [Card(12, "C"), Card(9, "S"), Card(10, "D"), Card(8, "C"), Card(11, "D")]
+        self.hand_5555 = [Card(5, "C"), Card(
+            5, "D"), Card(5, "H"), Card(5, "S")]
+        self.hand_6789_suited = [Card(6, "C"), Card(
+            7, "C"), Card(8, "C"), Card(9, "C")]
+        self.hand_Q9T8J = [Card(12, "C"), Card(9, "S"), Card(
+            10, "D"), Card(8, "C"), Card(11, "D")]
         self.hand_67899 = [
             Card(6, "C"),
             Card(7, "C"),
@@ -67,7 +70,8 @@ class TestCard(unittest.TestCase):
     def test_pair_count(self):
         self.assertEqual(Card.pair_count(self.deck), 78)
         self.assertEqual(Card.pair_count(self.all_clubs), 0)
-        self.assertEqual(Card.pair_count(self.all_diamonds + self.all_hearts), 13)
+        self.assertEqual(Card.pair_count(
+            self.all_diamonds + self.all_hearts), 13)
         self.assertEqual(Card.pair_count(self.hand_5555), 6)
         self.assertEqual(Card.pair_count(self.hand_6789_suited), 0)
         self.assertEqual(Card.pair_count(self.hand_77889), 2)
@@ -81,7 +85,7 @@ class TestCard(unittest.TestCase):
         self.assertEqual(Card.fifteen_count(self.hand_77889), 4)
         self.assertEqual(Card.fifteen_count(self.hand_TJQK_unsuited), 0)
         self.assertEqual(Card.fifteen_count(self.hand_5555), 4)
-    
+
     def test_check_if_run(self):
         self.assertTrue(Card._check_if_run([1, 2, 3, 4, 5]))
         self.assertTrue(Card._check_if_run([5, 4, 3, 2, 1]))
@@ -104,6 +108,12 @@ class TestCard(unittest.TestCase):
         self.assertEqual(Card.score_hand(self.hand_TJQK_unsuited), 4)
         self.assertEqual(Card.score_hand(self.hand_67899), 16)
         self.assertEqual(Card.score_hand(self.hand_Q9T8J), 5)
+
+    def test_build_deck(self):
+        my_deck = Card.build_deck()
+        for i, card in enumerate(my_deck):
+            self.assertEqual(card.rank, self.deck[i].rank)
+            self.assertEqual(card.suit, self.deck[i].suit)
 
 
 if __name__ == "__main__":

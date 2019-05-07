@@ -12,11 +12,7 @@ class Game(object):
         self.crib = []
         self.goal_score = 120
         self.game_over = False
-
-        self.deck = []
-        for suit in ["C", "D", "H", "S"]:
-            for rank in range(1, 14):
-                self.deck.append(Card(rank, suit))
+        self.deck = Card.build_deck()
 
         if isinstance(player_names, list):
             self.players = [Player(name) for name in player_names]
@@ -30,8 +26,8 @@ class Game(object):
 
     def __repr__(self):
         player_lines = ''
-        for player in self.players:
-            player_lines += f"  { player }\n"
+        for i, player in enumerate(self.players):
+            player_lines += f"{ '*' if i == self.dealer_seat else ' '} { player }\n"
 
         return (
             f"Hand Number: { self.hand_number }\n"
@@ -45,13 +41,12 @@ class Game(object):
         self.hand_number = self.hand_number + 1
         for pnum, player in enumerate(self.players):
             index_card = pnum * self.cards_per_player
-            player.hand = self.deck[index_card:index_card +
-                                    self.cards_per_player]
+            player.set_hand(
+                self.deck[index_card:index_card + self.cards_per_player])
 
-    def throw_to_crib(self):
+    def collect_crib(self):
         for player in self.players:
-            self.crib += player.hand[4:]
-            player.hand = player.hand[:4]
+            self.crib += player.throw_to_crib()
         if len(self.crib) == 2:
             self.crib += self.deck[-3:-1]  # -1 is the cut card
         elif len(self.crib) == 3:
@@ -62,19 +57,20 @@ class Game(object):
         if self.cut_card.rank == 11:
             self.players[self.dealer_seat].update_score(2)
 
-    def score(self):
+    def score_hands(self):
         for i in range(0, len(self.players)):
             # add 1 to players index so that we count dealer last
             player_to_count = (i + self.dealer_seat + 1) % len(self.players)
             player = self.players[player_to_count]
-            player.update_score(Card.score_hand(player.hand + [self.cut_card]))
-            if self.check_if_winner(player):
+            player.score_hand(self.cut_card)
+            if player.is_winner(self.goal_score):
                 self.game_over = True
                 break  # stop counting immediately
+            # count the crib points for the dealer
             if player_to_count == self.dealer_seat:
                 player.update_score(Card.score_hand(
                     self.crib + [self.cut_card]))
-                if self.check_if_winner(player):
+                if player.is_winner(self.goal_score):
                     self.game_over = True
                     break  # stop counting immediately
 
@@ -92,6 +88,6 @@ class Game(object):
         while not self.game_over:
             self.clean_up_hand()
             self.deal()
-            self.throw_to_crib()
+            self.collect_crib()
             self.cut()
-            self.score()
+            self.score_hands()

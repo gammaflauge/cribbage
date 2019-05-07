@@ -60,7 +60,7 @@ class TestGame(unittest.TestCase):
     def test_cut_knobs(self):
         random.seed(512019)
         self.game_4p.deal()
-        self.game_4p.throw_to_crib()
+        self.game_4p.collect_crib()
         self.game_4p.cut()
         self.assertEqual(self.game_4p.players[0].score, 2)
         self.assertEqual(self.game_4p.players[1].score, 0)
@@ -70,18 +70,18 @@ class TestGame(unittest.TestCase):
     def test_cut_no_knobs(self):
         random.seed(1032015)
         self.game_4p.deal()
-        self.game_4p.throw_to_crib()
+        self.game_4p.collect_crib()
         self.game_4p.cut()
         self.assertEqual(self.game_4p.players[0].score, 0)
         self.assertEqual(self.game_4p.players[1].score, 0)
         self.assertEqual(self.game_4p.players[2].score, 0)
         self.assertEqual(self.game_4p.players[3].score, 0)
 
-    def test_throw_to_crib(self):
+    def test_collect_crib(self):
         for game in self.all_games:
             for _ in range(0, 5):
                 game.deal()
-                game.throw_to_crib()
+                game.collect_crib()
                 for player in game.players:
                     self.assertEqual(len(player.hand), 4)
                 self.assertEqual(len(game.crib), 4)
@@ -102,20 +102,22 @@ class TestGame(unittest.TestCase):
 
     def test_score(self):
         random.seed(512019)
+        # first hand
         self.game_4p.deal()
-        self.game_4p.throw_to_crib()
+        self.game_4p.collect_crib()
         self.game_4p.cut()
-        self.game_4p.score()
+        self.game_4p.score_hands()
         self.game_4p.clean_up_hand()
         self.assertEqual(self.game_4p.players[0].score, 6)
         self.assertEqual(self.game_4p.players[1].score, 10)
         self.assertEqual(self.game_4p.players[2].score, 2)
         self.assertEqual(self.game_4p.players[3].score, 9)
 
+        # second hand
         self.game_4p.deal()
-        self.game_4p.throw_to_crib()
+        self.game_4p.collect_crib()
         self.game_4p.cut()
-        self.game_4p.score()
+        self.game_4p.score_hands()
         self.game_4p.clean_up_hand()
         self.assertEqual(self.game_4p.players[0].score, 12)
         self.assertEqual(self.game_4p.players[1].score, 24)
@@ -133,18 +135,18 @@ class TestGame(unittest.TestCase):
         self.assertFalse(self.game_2p.game_over)
         self.game_2p.dealer_seat = 1
         self.game_2p.deal()
-        self.game_2p.throw_to_crib()
+        self.game_2p.collect_crib()
         self.game_2p.cut()
-        self.game_2p.score()
+        self.game_2p.score_hands()
         self.assertFalse(self.game_2p.game_over)
         self.assertEqual(p1.score, 119)
         self.assertEqual(p2.score, 17)
 
         self.game_2p.dealer_seat = 1
         self.game_2p.deal()
-        self.game_2p.throw_to_crib()
+        self.game_2p.collect_crib()
         self.game_2p.cut()
-        self.game_2p.score()
+        self.game_2p.score_hands()
         self.assertTrue(self.game_2p.game_over)
         self.assertEqual(p1.score, 125)
         self.assertEqual(p2.score, 17)
