@@ -3,15 +3,15 @@ import random
 
 from cribbage.game import Game
 from cribbage.card import Card
-from cribbage.player import Player
+from cribbage.player import NaiveBot
 
 
 class TestGame(unittest.TestCase):
     def setUp(self):
-        p1 = "char"
-        p2 = "sam"
-        p3 = "zee"
-        p4 = "daisy"
+        p1 = NaiveBot("char")
+        p2 = NaiveBot("sam")
+        p3 = NaiveBot("zee")
+        p4 = NaiveBot("daisy")
 
         self.game_1p = Game(p1)
         self.game_2p = Game([p1, p2])
@@ -42,6 +42,7 @@ class TestGame(unittest.TestCase):
         for game in self.all_games:
             self.assertIsNone(game.cut_card)
             for player in game.players:
+                player.discard_hand()
                 self.assertEqual(len(player.hand), 0)
             game.deal()
             for player in game.players:

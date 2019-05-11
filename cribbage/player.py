@@ -21,16 +21,7 @@ class Player(object):
         return self.score >= goal_score
 
     def throw_to_crib(self):
-        '''
-        Update Player.hand -- remove two cards and return them 
-        (They should be added to to the crib)
-
-        This (very dumb) player always keeps their first four
-        cards and tosses the rest.
-        '''
-        crib_cards = self.hand[4:]
-        self.hand = self.hand[:4]
-        return crib_cards
+        raise NotImplementedError
 
     def score_hand(self, cut_card=None):
         '''
@@ -57,3 +48,22 @@ class Player(object):
         usually done at the end of the round
         '''
         self.hand = []
+
+
+class NaiveBot(Player):
+    '''
+    NaiveBot acts as if they know the rules but
+    has no understanding of strategy.
+    '''
+
+    def __init__(self, name):
+        super().__init__(name)
+
+    def throw_to_crib(self):
+        '''
+        NaiveBot will always keeps their first four
+        cards and tosses the rest.
+        '''
+        crib_cards = self.hand[4:]
+        self.hand = self.hand[:4]
+        return crib_cards

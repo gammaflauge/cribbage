@@ -5,7 +5,7 @@ from .player import Player
 
 
 class Game(object):
-    def __init__(self, player_names):
+    def __init__(self, players):
         self.hand_number = 0
         self.dealer_seat = 0
         self.cut_card = None
@@ -14,10 +14,10 @@ class Game(object):
         self.game_over = False
         self.deck = Card.build_deck()
 
-        if isinstance(player_names, list):
-            self.players = [Player(name) for name in player_names]
+        if isinstance(players, list):
+            self.players = players
         else:
-            self.players = [Player(player_names)]
+            self.players = [players]
 
         if len(self.players) <= 2:
             self.cards_per_player = 6
