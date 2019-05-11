@@ -13,6 +13,7 @@ class Game(object):
         self.crib = []
         self.goal_score = 120
         self.game_over = False
+        self.winner = None
         self.deck = Card.build_deck()
 
         if isinstance(players, list):
@@ -24,6 +25,10 @@ class Game(object):
             self.cards_per_player = 6
         else:
             self.cards_per_player = 5
+
+        for player in self.players:
+            player.hand = []
+            player.score = 0
 
     def __repr__(self):
         player_lines = ''
@@ -65,6 +70,7 @@ class Game(object):
             player = self.players[player_to_count]
             player.score_hand(self.cut_card)
             if player.is_winner(self.goal_score):
+                self.winner = player.name
                 self.game_over = True
                 break  # stop counting immediately
             # count the crib points for the dealer
@@ -73,6 +79,7 @@ class Game(object):
                     self.crib + [self.cut_card]))
                 if player.is_winner(self.goal_score):
                     self.game_over = True
+                    self.winner = player.name
                     break  # stop counting immediately
 
     def clean_up_hand(self):

@@ -1,43 +1,53 @@
 import os
 import random
 
-from game import Game
-from player import Player
+from cribbage import player, game
 
 
-my_game = Game(['char', 'sam'])
+def run_sims(players, num_sims):
+    '''
+    simulates `num_sims` standard games with the input list of players
 
-best_game = str(my_game)
-best_score = 0
-all_scores = {}
+    returns a dict with the winner count
+    '''
 
-for i in range(0, 100000):
-    # print(f"Hand Number { i }")
-    pre_score = my_game.players[0].score
-    my_game.deal()
-    my_game.throw_to_crib()
+    total_hands = 0
 
-    my_game.score()
-    # print(my_game)
+    # name: [wins, total_points]
+    scorecard = {}
+    for player in players:
+        scorecard[player.name] = [0, 0]
 
-    game_score = my_game.players[0].score - pre_score
-    if game_score in all_scores.keys():
-        all_scores[game_score] += 1
-    else:
-        all_scores[game_score] = 1
+    for _ in range(0, num_sims):
+        my_game = game.Game(players)
+        my_game.sim_game()
+        total_hands += my_game.hand_number
+        scorecard[my_game.winner][0] += 1
+        for player in players:
+            scorecard[player.name][1] += player.score
 
-    if game_score > best_score:
-        best_score = game_score
-        best_game = str(my_game)
+    return scorecard, total_hands
 
-print(f"best game = { best_score }")
-print(best_game)
 
-print("*"*80)
-scores = sorted(all_scores.keys())
-for score in scores:
-    print(f"{ score } -> { all_scores[score] }")
+daisy = player.NaiveBot("daisy")
+sam = player.LowBot("sam")
+char = player.HighBot("char")
 
+num_sims = 2333
+
+scorecard, total_hands = run_sims([daisy, sam, char], num_sims)
+
+print(scorecard)
+print(f"played { num_sims } games, { total_hands } hands")
+
+for player in scorecard:
+    wins = scorecard[player][0]
+    win_pct = round(wins / num_sims * 100, 2)
+    avg_score = round(scorecard[player][1] / total_hands, 1)
+    print(f"{ player } \n-- { wins } ({ win_pct }%), { avg_score } points per hand")
+
+# 10000 games
+# {'daisy': 1495, 'sam': 5663, 'char': 2842}
 
 # main loop
 # 1. deal cards

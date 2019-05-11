@@ -67,3 +67,33 @@ class NaiveBot(Player):
         crib_cards = self.hand[4:]
         self.hand = self.hand[:4]
         return crib_cards
+
+
+class LowBot(Player):
+    '''
+    LowBot only wants low cards, always throws the highest cards to the crib.
+    '''
+
+    def __init__(self, name):
+        super().__init__(name)
+
+    def throw_to_crib(self):
+        self.hand.sort(key=lambda x: x.rank)
+        crib_cards = self.hand[4:]
+        self.hand = self.hand[:4]
+        return crib_cards
+
+
+class HighBot(Player):
+    '''
+    HighBot only wants high cards, always throws the lowest cards to the crib.
+    '''
+
+    def __init__(self, name):
+        super().__init__(name)
+
+    def throw_to_crib(self):
+        self.hand.sort(key=lambda x: -x.rank)
+        crib_cards = self.hand[4:]
+        self.hand = self.hand[:4]
+        return crib_cards
