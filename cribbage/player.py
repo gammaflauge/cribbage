@@ -2,7 +2,7 @@
 A Player is a contestant in the cribbage match.
 '''
 
-from .card import Card
+from .scoring import score_hand
 
 
 class Player(object):
@@ -29,9 +29,9 @@ class Player(object):
         Updates player score and returns the number of points
         '''
         if cut_card:
-            points = Card.score_hand(self.hand + [cut_card])
+            points = score_hand(self.hand + [cut_card])
         else:
-            points = Card.score_hand(self.hand)
+            points = score_hand(self.hand)
 
         self.update_score(points)
         return points

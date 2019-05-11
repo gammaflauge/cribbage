@@ -2,6 +2,7 @@ import random
 
 from .card import Card
 from .player import Player
+from .scoring import score_hand
 
 
 class Game(object):
@@ -68,7 +69,7 @@ class Game(object):
                 break  # stop counting immediately
             # count the crib points for the dealer
             if player_to_count == self.dealer_seat:
-                player.update_score(Card.score_hand(
+                player.update_score(score_hand(
                     self.crib + [self.cut_card]))
                 if player.is_winner(self.goal_score):
                     self.game_over = True
