@@ -1,7 +1,7 @@
 import random
 
-from card import Card
-from player import Player
+from .card import Card
+from .player import Player
 
 
 class Game(object):

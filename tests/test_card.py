@@ -1,6 +1,6 @@
 import unittest
 
-from card import Card
+from cribbage.card import Card
 
 
 class TestCard(unittest.TestCase):

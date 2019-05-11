@@ -2,7 +2,7 @@
 A Player is a contestant in the cribbage match.
 '''
 
-from card import Card
+from .card import Card
 
 
 class Player(object):

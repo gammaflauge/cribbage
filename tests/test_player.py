@@ -1,7 +1,7 @@
 import unittest
 
-from player import Player
-from card import Card
+from cribbage.player import Player
+from cribbage.card import Card
 
 
 class TestGame(unittest.TestCase):

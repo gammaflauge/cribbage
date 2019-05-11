@@ -1,9 +1,9 @@
 import unittest
 import random
 
-from game import Game
-from card import Card
-from player import Player
+from cribbage.game import Game
+from cribbage.card import Card
+from cribbage.player import Player
 
 
 class TestGame(unittest.TestCase):
