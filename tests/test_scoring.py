@@ -97,7 +97,7 @@ class TestScoring(unittest.TestCase):
         self.assertEqual(cribbage.scoring.score_hand(self.hand_77889), 24)
         self.assertEqual(cribbage.scoring.score_hand(
             self.hand_TJQK_unsuited), 4)
-        self.assertEqual(cribbage.scoring.score_hand(self.hand_67899), 16)
+        self.assertEqual(cribbage.scoring.score_hand(self.hand_67899), 20)
         self.assertEqual(cribbage.scoring.score_hand(self.hand_Q9T8J), 5)
 
 

@@ -64,6 +64,13 @@ def run_count(cards):
     return len(run) * multiplier
 
 
+def knobs_check(cards):
+    for card in cards[:-1]:
+        if card.rank == 11 and card.suit == cards[-1].suit:
+            return True
+    return False
+
+
 def _check_if_run(ranks):
     if len(ranks) < 3:
         return False
@@ -79,11 +86,18 @@ def score_hand(cards):
     """
     assumes the cut card is always the last card passed in
     """
-    flush_score = 0
     if flush_check(cards):
+        # hand and cut card all big flush
         flush_score = len(cards)
+    elif flush_check(cards[:-1]):
+        # hand is flush but cut card does not match
+        flush_score = len(cards) - 1
+    else:
+        flush_score = 0
     pair_score = 2 * pair_count(cards)
     fifteen_score = 2 * fifteen_count(cards)
     run_score = run_count(cards)
-    total_score = flush_score + pair_score + fifteen_score + run_score
+    knobs_score = 1 if knobs_check(cards) else 0
+    total_score = flush_score + pair_score + \
+        fifteen_score + run_score + knobs_score
     return total_score

@@ -2,8 +2,8 @@ import unittest
 import random
 
 from cribbage.game import Game
-from cribbage.card import Card
 from cribbage.player import NaiveBot
+from cribbage.game import Round
 
 
 class TestGame(unittest.TestCase):
@@ -20,155 +20,55 @@ class TestGame(unittest.TestCase):
         self.all_games = [self.game_1p,
                           self.game_2p, self.game_3p, self.game_4p]
 
-    def test_init_deck(self):
-        for game in self.all_games:
-            self.assertEqual(len(game.deck), 52)
-            for suit in ["C", "H", "S", "D"]:
-                card_count = len(
-                    [card for card in game.deck if card.suit == suit])
-                self.assertEqual(card_count, 13)
-            for rank in range(1, 14):
-                card_count = len(
-                    [card for card in game.deck if card.rank == rank])
-                self.assertEqual(card_count, 4)
-
     def test_init_cards_per_player(self):
         self.assertEqual(self.game_1p.cards_per_player, 6)
         self.assertEqual(self.game_2p.cards_per_player, 6)
         self.assertEqual(self.game_3p.cards_per_player, 5)
         self.assertEqual(self.game_4p.cards_per_player, 5)
 
-    def test_deal(self):
-        for game in self.all_games:
-            self.assertIsNone(game.cut_card)
-            for player in game.players:
-                player.discard_hand()
-                self.assertEqual(len(player.hand), 0)
-            game.deal()
-            for player in game.players:
-                self.assertEqual(len(player.hand), game.cards_per_player)
-            self.assertIsNone(game.cut_card)
-
-    def test_cut(self):
-        for game in self.all_games:
-            self.assertIsNone(game.cut_card)
-            game.deal()
-            self.assertIsNone(game.cut_card)
-            game.cut()
-            self.assertIsNotNone(game.cut_card)
-            self.assertIsInstance(game.cut_card, Card)
-
-    def test_cut_knobs(self):
-        random.seed(512019)
-        self.game_4p.deal()
-        self.game_4p.collect_crib()
-        self.game_4p.cut()
-        self.assertEqual(self.game_4p.players[0].score, 2)
-        self.assertEqual(self.game_4p.players[1].score, 0)
-        self.assertEqual(self.game_4p.players[2].score, 0)
-        self.assertEqual(self.game_4p.players[3].score, 0)
-
-    def test_cut_no_knobs(self):
-        random.seed(1032015)
-        self.game_4p.deal()
-        self.game_4p.collect_crib()
-        self.game_4p.cut()
-        self.assertEqual(self.game_4p.players[0].score, 0)
-        self.assertEqual(self.game_4p.players[1].score, 0)
-        self.assertEqual(self.game_4p.players[2].score, 0)
-        self.assertEqual(self.game_4p.players[3].score, 0)
-
-    def test_collect_crib(self):
-        for game in self.all_games:
-            for _ in range(0, 5):
-                game.deal()
-                game.collect_crib()
-                for player in game.players:
-                    self.assertEqual(len(player.hand), 4)
-                self.assertEqual(len(game.crib), 4)
-                game.clean_up_hand()
-
-    def test_clean_up_hand(self):
-        game = self.game_2p
-
-        game.players[0].hand = game.deck[:4]
-        game.players[1].hand = game.deck[14:18]
-        game.cut_card = game.deck[5]
-        game.crib = game.deck[-4:]
-        game.clean_up_hand()
-        self.assertListEqual(game.players[0].hand, [])
-        self.assertListEqual(game.players[1].hand, [])
-        self.assertListEqual(game.crib, [])
-        self.assertIsNone(game.cut_card)
-
     def test_score(self):
         random.seed(512019)
         # first hand
-        self.game_4p.deal()
-        self.game_4p.collect_crib()
-        self.game_4p.cut()
-        self.game_4p.score_hands()
-        self.game_4p.clean_up_hand()
-        self.assertEqual(self.game_4p.players[0].score, 6)
-        self.assertEqual(self.game_4p.players[1].score, 10)
-        self.assertEqual(self.game_4p.players[2].score, 2)
-        self.assertEqual(self.game_4p.players[3].score, 9)
+        Round(self.game_4p).run_round()
+        self.assertEqual(self.game_4p.scores["char"], 13)
+        self.assertEqual(self.game_4p.scores["sam"], 4)
+        self.assertEqual(self.game_4p.scores["zee"], 9)
+        self.assertEqual(self.game_4p.scores["daisy"], 0)
 
         # second hand
-        self.game_4p.deal()
-        self.game_4p.collect_crib()
-        self.game_4p.cut()
-        self.game_4p.score_hands()
-        self.game_4p.clean_up_hand()
-        self.assertEqual(self.game_4p.players[0].score, 12)
-        self.assertEqual(self.game_4p.players[1].score, 24)
-        self.assertEqual(self.game_4p.players[2].score, 7)
-        self.assertEqual(self.game_4p.players[3].score, 11)
+        r1 = Round(self.game_4p)
+        r1.run_round()
+        self.assertEqual(self.game_4p.scores["char"], 25)
+        self.assertEqual(self.game_4p.scores["sam"], 12)
+        self.assertEqual(self.game_4p.scores["zee"], 15)
+        self.assertEqual(self.game_4p.scores["daisy"], 2)
 
     def test_score_at_endgame(self):
         random.seed(512019)
-        # p1 should score 6 points game 1, 6 points game 2
-        # p2 should score 17 points game 1 w/knobs, not get to score game 2
-        p1 = self.game_2p.players[0]
-        p2 = self.game_2p.players[1]
+        # sam should count first and score 4 points
+        # zee should score 9 points game and end the game
+        self.game_4p.scores["zee"] = 111
+        Round(self.game_4p).run_round()
+        self.assertTrue(self.game_4p.game_over)
+        self.assertEqual(self.game_4p.scores["char"], 0)
+        self.assertEqual(self.game_4p.scores["sam"], 4)
+        self.assertEqual(self.game_4p.scores["zee"], 120)
+        self.assertEqual(self.game_4p.scores["daisy"], 0)
 
-        p1.score = 115
-        self.assertFalse(self.game_2p.game_over)
-        self.game_2p.dealer_seat = 1
-        self.game_2p.deal()
-        self.game_2p.collect_crib()
-        self.game_2p.cut()
-        self.game_2p.score_hands()
-        self.assertFalse(self.game_2p.game_over)
-        self.assertEqual(p1.score, 119)
-        self.assertEqual(p2.score, 17)
-
-        self.game_2p.dealer_seat = 1
-        self.game_2p.deal()
-        self.game_2p.collect_crib()
-        self.game_2p.cut()
-        self.game_2p.score_hands()
-        self.assertTrue(self.game_2p.game_over)
-        self.assertEqual(p1.score, 125)
-        self.assertEqual(p2.score, 17)
-
-    def test_check_if_winner(self):
-        p1 = self.game_1p.players[0]
-        self.assertEqual(p1.score, 0)
-        self.assertFalse(self.game_1p.check_if_winner(p1))
-        self.game_1p.players[0].score = 119
-        self.assertFalse(self.game_1p.check_if_winner(p1))
-        self.game_1p.players[0].score = 120
-        self.assertTrue(self.game_1p.check_if_winner(p1))
-        self.game_1p.players[0].score = 121
-        self.assertTrue(self.game_1p.check_if_winner(p1))
+    def test_end_round(self):
+        self.assertEqual(self.game_4p.dealer_seat, 0)
+        self.assertEqual(self.game_4p.round_number, 1)
+        self.game_4p.end_round()
+        self.assertEqual(self.game_4p.dealer_seat, 1)
+        self.assertEqual(self.game_4p.round_number, 2)
+        self.game_4p.end_round()
+        self.game_4p.end_round()
+        self.game_4p.end_round()
+        self.assertEqual(self.game_4p.dealer_seat, 0)
+        self.assertEqual(self.game_4p.round_number, 5)
 
     def test_sim_game(self):
-        random.seed(512019)
         for game in self.all_games:
             game.sim_game()
-            found_winner = False
-            for player in game.players:
-                if player.score >= game.goal_score:
-                    found_winner = True
-            self.assertTrue(found_winner)
+            self.assertTrue(game.game_over)
+            self.assertIsNotNone(game.winner)
