@@ -29,6 +29,15 @@ class TestCard(unittest.TestCase):
             self.assertEqual(card.rank, self.deck[i].rank)
             self.assertEqual(card.suit, self.deck[i].suit)
 
+    def test_eq(self):
+        card_1 = Card(5, "H")
+        card_2 = Card(5, "H")
+        card_3 = Card(5, "S")
+        card_4 = Card(6, "H")
+        self.assertEqual(card_1, card_2)
+        self.assertNotEqual(card_1, card_3)
+        self.assertNotEqual(card_1, card_4)
+
 
 if __name__ == "__main__":
     unittest.main()

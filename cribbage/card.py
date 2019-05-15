@@ -25,6 +25,12 @@ class Card(object):
     def __str__(self):
         return self.display
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return (self.rank == other.rank) and (self.suit == other.suit)
+        else:
+            return False
+
     @staticmethod
     def build_deck():
         """
