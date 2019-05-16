@@ -1,4 +1,5 @@
 from itertools import combinations
+from math import factorial
 
 
 def flush_check(cards):
@@ -103,10 +104,40 @@ def score_hand(cards):
     return total_score
 
 
-def stack_count(cards):
+def stack_sum(cards):
     """
     provides the total rank sum for a list of cards accounting
     for all face cards counting as 10
     """
     return sum(
         map(lambda card: card.rank if card.rank < 10 else 10, cards))
+
+
+def score_stack(cards):
+    """
+    Assuming the last card in input cards is the last one played,
+    score stack will return the number of points scored for that play.
+    """
+    if not isinstance(cards, list):
+        raise RuntimeError("score_stack needs a list")
+
+    points = 0
+    if stack_sum(cards) in [15, 31]:
+        points += 2
+
+    pairs = 0
+    my_rank = cards[-1].rank
+    for card in reversed(cards[:-1]):
+        if card.rank == my_rank:
+            pairs += 1
+        else:
+            break
+    points += factorial(pairs) if pairs > 0 else 0
+
+    for i in range(0, len(cards)):
+        potential_run = [card.rank for card in cards[i:]]
+        if _check_if_run(potential_run):
+            points += len(potential_run)
+            break
+
+    return points

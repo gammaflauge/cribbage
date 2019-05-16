@@ -2,7 +2,7 @@
 A Player is a contestant in the cribbage match.
 '''
 
-from .scoring import score_hand, stack_count
+from .scoring import score_hand, stack_sum
 
 
 class Player(object):
@@ -44,7 +44,7 @@ class NaiveBot(Player):
         Returns None if no cards are legal plays
         '''
         for card in my_hand:
-            if stack_count(stack + [card]) <= 31:
+            if stack_sum(stack + [card]) <= 31:
                 return card
         return None
 
@@ -70,7 +70,7 @@ class LowBot(Player):
         '''
         my_hand.sort(key=lambda x: x.rank)
         for card in my_hand:
-            if stack_count(stack + [card]) <= 31:
+            if stack_sum(stack + [card]) <= 31:
                 return card
         return None
 
@@ -95,6 +95,6 @@ class HighBot(Player):
         '''
         my_hand.sort(key=lambda x: -x.rank)
         for card in my_hand:
-            if stack_count(stack + [card]) <= 31:
+            if stack_sum(stack + [card]) <= 31:
                 return card
         return None

@@ -7,7 +7,7 @@ score hands, score crib, and clean up.
 import random
 
 from .card import Card
-from .scoring import score_hand, stack_count
+from .scoring import score_hand, stack_sum, score_stack
 
 
 class Round(object):
@@ -111,14 +111,17 @@ class Round(object):
             if played_card:
                 temp_hands[player.name].remove(played_card)
                 stack.append(played_card)
+                points = score_stack(stack)
+                self.game.update_player_score(player.name, score_stack(stack))
                 cards_to_play -= 1
                 said_go = 0
-                print(f"{ stack } -> { stack_count(stack) } ({ player.name })")
+                print(
+                    f"{ stack } -> { stack_sum(stack) } = { points } ({ player.name })")
             else:
                 said_go += 1
                 print(f"{ player.name } says go")
 
-            if stack_count(stack) == 31 or said_go == len(self.game.players):
+            if stack_sum(stack) == 31 or said_go == len(self.game.players):
                 # reset the stack
                 stack = []
                 said_go = 0
