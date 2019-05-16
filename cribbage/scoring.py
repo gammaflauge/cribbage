@@ -101,3 +101,12 @@ def score_hand(cards):
     total_score = flush_score + pair_score + \
         fifteen_score + run_score + knobs_score
     return total_score
+
+
+def stack_count(cards):
+    """
+    provides the total rank sum for a list of cards accounting
+    for all face cards counting as 10
+    """
+    return sum(
+        map(lambda card: card.rank if card.rank < 10 else 10, cards))

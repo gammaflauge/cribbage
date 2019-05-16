@@ -112,3 +112,10 @@ class TestRound(unittest.TestCase):
         self.assertEqual(self.game_4p.scores["char"], 2)
         self.assertEqual(self.game_4p.scores["daisy"], 8)
         self.assertEqual(self.game_4p.scores["zee"], 2)
+
+    def test_play_hands(self):
+        my_round = Round(self.game_4p)
+        my_round.deal()
+        my_round.collect_crib()
+        my_round.cut()
+        my_round.play_hands()

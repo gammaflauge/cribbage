@@ -7,7 +7,7 @@ score hands, score crib, and clean up.
 import random
 
 from .card import Card
-from .scoring import score_hand
+from .scoring import score_hand, stack_count
 
 
 class Round(object):
@@ -84,6 +84,46 @@ class Round(object):
 
         if self.cut_card.rank == 11:
             self.game.update_player_score(self.get_dealer_name(), 2)
+
+    def play_hands(self):
+        '''
+        Starting with the player to the right of the dealer, each player
+        plays a card to the stack. Players can score points by making
+        15s, pairs, or runs.
+
+        This is repeated until all dealt cards are played.
+        '''
+        # temporarily store a copy of player hands that we can remove cards
+        # from as they are played
+        temp_hands = self.player_hands
+        print(temp_hands)
+        cards_to_play = 0
+        for player in self.game.players:
+            cards_to_play += len(self.player_hands[player.name])
+        print(cards_to_play)
+        player_turn = (self.game.dealer_seat + 1) % len(self.game.players)
+        stack = []
+        said_go = 0
+
+        while cards_to_play > 0:
+            player = self.game.players[player_turn]
+            played_card = player.play_card(temp_hands[player.name], stack)
+            if played_card:
+                temp_hands[player.name].remove(played_card)
+                stack.append(played_card)
+                cards_to_play -= 1
+                said_go = 0
+                print(f"{ stack } -> { stack_count(stack) } ({ player.name })")
+            else:
+                said_go += 1
+                print(f"{ player.name } says go")
+
+            if stack_count(stack) == 31 or said_go == len(self.game.players):
+                # reset the stack
+                stack = []
+                said_go = 0
+
+            player_turn = (player_turn + 1) % len(self.game.players)
 
     def score_hands(self):
         '''
