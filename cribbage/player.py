@@ -8,14 +8,16 @@ from .scoring import score_hand, stack_sum
 class Player(object):
     def __init__(self, name):
         self.name = name
+        self.score = 0
+        self.hand = []
 
     def __repr__(self):
         return f"{ self.name }"
 
-    def throw_to_crib(self, my_hand):
+    def throw_to_crib(self):
         raise NotImplementedError
 
-    def play_card(self, my_hand, stack):
+    def play_card(self, stack):
         raise NotImplementedError
 
 
@@ -28,23 +30,24 @@ class NaiveBot(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def throw_to_crib(self, my_hand):
+    def throw_to_crib(self):
         '''
         NaiveBot will always keeps their first four
         cards and tosses the rest.
         '''
-        crib_cards = my_hand[4:]
-        my_hand = my_hand[:4]
-        return crib_cards, my_hand
+        crib_cards = self.hand[4:]
+        self.hand = self.hand[:4]
+        return crib_cards
 
-    def play_card(self, my_hand, stack):
+    def play_card(self, stack):
         '''
         NaiveBot always plays the first card in their hand
 
         Returns None if no cards are legal plays
         '''
-        for card in my_hand:
+        for card in self.hand:
             if stack_sum(stack + [card]) <= 31:
+                self.hand.remove(card)
                 return card
         return None
 
@@ -57,20 +60,21 @@ class LowBot(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def throw_to_crib(self, my_hand):
-        my_hand.sort(key=lambda x: x.rank)
-        crib_cards = my_hand[4:]
-        my_hand = my_hand[:4]
-        return crib_cards, my_hand
+    def throw_to_crib(self):
+        self.hand.sort(key=lambda x: x.rank)
+        crib_cards = self.hand[4:]
+        self.hand = self.hand[:4]
+        return crib_cards
 
-    def play_card(self, my_hand, stack):
+    def play_card(self, stack):
         '''
         LowBot wants to keep their low cards as long as possible, so she will
         always play the highest card in their hand if possible
         '''
-        my_hand.sort(key=lambda x: x.rank)
-        for card in my_hand:
+        self.hand.sort(key=lambda x: x.rank)
+        for card in self.hand:
             if stack_sum(stack + [card]) <= 31:
+                self.hand.remove(card)
                 return card
         return None
 
@@ -79,22 +83,23 @@ class HighBot(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def throw_to_crib(self, my_hand):
+    def throw_to_crib(self):
         '''
         HighBot only wants high cards, always throws the lowest cards to the crib.
         '''
-        my_hand.sort(key=lambda x: -x.rank)
-        crib_cards = my_hand[4:]
-        my_hand = my_hand[:4]
-        return crib_cards, my_hand
+        self.hand.sort(key=lambda x: -x.rank)
+        crib_cards = self.hand[4:]
+        self.hand = self.hand[:4]
+        return crib_cards
 
-    def play_card(self, my_hand, stack):
+    def play_card(self, stack):
         '''
         HighBot wants to keep their high cards as long as possible, so she will
         always play the lowest card in their hand if possible
         '''
-        my_hand.sort(key=lambda x: -x.rank)
-        for card in my_hand:
+        self.hand.sort(key=lambda x: -x.rank)
+        for card in self.hand:
             if stack_sum(stack + [card]) <= 31:
+                self.hand.remove(card)
                 return card
         return None

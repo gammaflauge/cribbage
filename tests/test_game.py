@@ -13,7 +13,7 @@ class TestGame(unittest.TestCase):
         p3 = NaiveBot("zee")
         p4 = NaiveBot("daisy")
 
-        self.game_1p = Game(p1)
+        self.game_1p = Game([p1])
         self.game_2p = Game([p1, p2])
         self.game_3p = Game([p1, p2, p3])
         self.game_4p = Game([p1, p2, p3, p4])
@@ -30,30 +30,30 @@ class TestGame(unittest.TestCase):
         random.seed(512019)
         # first hand
         Round(self.game_4p).run_round()
-        self.assertEqual(self.game_4p.scores["char"], 13)
-        self.assertEqual(self.game_4p.scores["sam"], 4)
-        self.assertEqual(self.game_4p.scores["zee"], 9)
-        self.assertEqual(self.game_4p.scores["daisy"], 0)
+        self.assertEqual(self.game_4p.players[0].score, 13)
+        self.assertEqual(self.game_4p.players[1].score, 4)
+        self.assertEqual(self.game_4p.players[2].score, 9)
+        self.assertEqual(self.game_4p.players[3].score, 0)
 
         # second hand
         r1 = Round(self.game_4p)
         r1.run_round()
-        self.assertEqual(self.game_4p.scores["char"], 25)
-        self.assertEqual(self.game_4p.scores["sam"], 12)
-        self.assertEqual(self.game_4p.scores["zee"], 15)
-        self.assertEqual(self.game_4p.scores["daisy"], 2)
+        self.assertEqual(self.game_4p.players[0].score, 25)
+        self.assertEqual(self.game_4p.players[1].score, 12)
+        self.assertEqual(self.game_4p.players[2].score, 15)
+        self.assertEqual(self.game_4p.players[3].score, 2)
 
     def test_score_at_endgame(self):
         random.seed(512019)
         # sam should count first and score 4 points
         # zee should score 9 points game and end the game
-        self.game_4p.scores["zee"] = 111
+        self.game_4p.players[2].score = 111
         Round(self.game_4p).run_round()
         self.assertTrue(self.game_4p.game_over)
-        self.assertEqual(self.game_4p.scores["char"], 0)
-        self.assertEqual(self.game_4p.scores["sam"], 4)
-        self.assertEqual(self.game_4p.scores["zee"], 120)
-        self.assertEqual(self.game_4p.scores["daisy"], 0)
+        self.assertEqual(self.game_4p.players[0].score, 0)
+        self.assertEqual(self.game_4p.players[1].score, 4)
+        self.assertEqual(self.game_4p.players[2].score, 120)
+        self.assertEqual(self.game_4p.players[3].score, 0)
 
     def test_end_round(self):
         self.assertEqual(self.game_4p.dealer_seat, 0)

@@ -16,18 +16,15 @@ class Round(object):
         self.crib = []
         self.deck = Card.build_deck()
         self.game = game
-        self.player_hands = {}
-
         for player in self.game.players:
-            self.player_hands[player.name] = []
+            player.hand = []
 
     def __repr__(self):
         player_lines = ''
         for i, player in enumerate(self.game.players):
             player_lines += (
                 f"{ '*' if i == self.game.dealer_seat else ' '} { player } "
-                f"[{ self.game.scores[player.name] }]"
-                f" -- { self.player_hands[player.name] }\n")
+                f"[{ player.score }] -- { player.hand }\n")
 
         return (
             f"Round Number: { self.game.round_number }\n"
@@ -36,8 +33,8 @@ class Round(object):
             f"  crib -- { self.crib }"
         )
 
-    def get_dealer_name(self):
-        return self.game.players[self.game.dealer_seat].name
+    def get_dealer(self):
+        return self.game.players[self.game.dealer_seat]
 
     def deal(self):
         '''
@@ -47,12 +44,12 @@ class Round(object):
         assertion error will be raised
         '''
         for player in self.game.players:
-            assert (self.player_hands[player.name] == [])
+            assert (player.hand == [])
 
         random.shuffle(self.deck)
         for _ in range(self.game.cards_per_player):
             for player in self.game.players:
-                self.player_hands[player.name].append(self.deck.pop())
+                player.hand.append(self.deck.pop())
 
     def collect_crib(self):
         '''
@@ -65,10 +62,9 @@ class Round(object):
         assert (self.crib == []), "Crib already exists"
 
         for player in self.game.players:
-            crib_cards, player_new_hand = player.throw_to_crib(
-                self.player_hands[player.name])
+            crib_cards = player.throw_to_crib()
             self.crib += crib_cards
-            self.player_hands[player.name] = player_new_hand
+            # player.hand = player_new_hand
         while len(self.crib) < 4:
             self.crib.append(self.deck.pop())
 
@@ -83,7 +79,7 @@ class Round(object):
         self.cut_card = self.deck.pop()
 
         if self.cut_card.rank == 11:
-            self.game.update_player_score(self.get_dealer_name(), 2)
+            self.game.update_player_score(self.get_dealer(), 2)
 
     def get_player_turn(self, turn_number=1):
         '''
@@ -102,24 +98,23 @@ class Round(object):
 
         This is repeated until all dealt cards are played.
         '''
-        # temporarily store a copy of player hands that we can remove cards
-        # from as they are played
-        temp_hands = self.player_hands
+        # store a copy of player hands that we can restore to after
+        # playeing out the hands
+        for player in self.game.players:
+            player.orig_hand = player.hand
         turn_number = 1
         player = self.get_player_turn(turn_number)
         stack = []
         said_go = 0
 
-        while sum([len(temp_hands[player.name]) for player in self.game.players]) > 0:
-            played_card = player.play_card(temp_hands[player.name], stack)
+        while sum([len(player.hand) for player in self.game.players]) > 0:
+            played_card = player.play_card(stack)
             turn_number += 1
 
             if played_card:
-                last_to_play_card = player.name
-                temp_hands[last_to_play_card].remove(played_card)
+                last_to_play_card = player
                 stack.append(played_card)
-                self.game.update_player_score(
-                    last_to_play_card, score_stack(stack))
+                self.game.update_player_score(player, score_stack(stack))
                 said_go = 0
             else:
                 said_go += 1
@@ -138,6 +133,9 @@ class Round(object):
             # last card played gets a point as long as it didnt hit 31
             self.game.update_player_score(last_to_play_card, 1)
 
+        for player in self.game.players:
+            player.hand = player.orig_hand
+
     def score_hands(self):
         '''
         Start with the player to the right of the dealer (+1 in index terms),
@@ -150,12 +148,9 @@ class Round(object):
 
         for i in range(0, len(self.game.players)):
             # add 1 to players index so that we count dealer last
-            player_to_count = (i + self.game.dealer_seat +
-                               1) % len(self.game.players)
-            player_name = self.game.players[player_to_count].name
-            points = score_hand(
-                self.player_hands[player_name] + [self.cut_card])
-            self.game.update_player_score(player_name, points)
+            player_to_count = self.get_player_turn(i + 1)
+            points = score_hand(player_to_count.hand + [self.cut_card])
+            self.game.update_player_score(player_to_count, points)
             if self.game.game_over:
                 break  # stop counting immediately
 
@@ -166,9 +161,9 @@ class Round(object):
         '''
         assert (self.cut_card is not None), "Cut card does not exist"
 
-        player_name = self.get_dealer_name()
+        player = self.get_dealer()
         points = score_hand(self.crib + [self.cut_card])
-        self.game.update_player_score(player_name, points)
+        self.game.update_player_score(player, points)
 
     def run_round(self):
         '''

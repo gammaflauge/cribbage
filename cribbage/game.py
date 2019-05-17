@@ -5,6 +5,10 @@ from .round import Round
 
 class Game(object):
     def __init__(self, players):
+        if not isinstance(players, list):
+            raise RuntimeError("players argument must be a list")
+
+        self.players = players
         self.round_number = 1
         self.dealer_seat = 0
         self.goal_score = 120
@@ -12,18 +16,10 @@ class Game(object):
         self.winner = None
         self.scores = {}
 
-        if isinstance(players, list):
-            self.players = players
-        else:
-            self.players = [players]
-
         if len(self.players) <= 2:
             self.cards_per_player = 6
         else:
             self.cards_per_player = 5
-
-        for player in self.players:
-            self.scores[player.name] = 0
 
     def __repr__(self):
         player_lines = ''
@@ -35,13 +31,13 @@ class Game(object):
             f"{ player_lines }"
         )
 
-    def update_player_score(self, player_name, points):
-        self.scores[player_name] += points
-        if self.scores[player_name] >= self.goal_score:
-            self.declare_winner(player_name)
+    def update_player_score(self, player, points):
+        player.score += points
+        if player.score >= self.goal_score:
+            self.declare_winner(player)
 
-    def declare_winner(self, player_name):
-        self.winner = player_name
+    def declare_winner(self, player):
+        self.winner = player
         self.game_over = True
 
     def end_round(self):
