@@ -100,6 +100,71 @@ class TestScoring(unittest.TestCase):
         self.assertEqual(cribbage.scoring.score_hand(self.hand_67899), 20)
         self.assertEqual(cribbage.scoring.score_hand(self.hand_Q9T8J), 5)
 
+    def test_stack_sum(self):
+        stack = []
+        self.assertEqual(cribbage.scoring.stack_sum(stack), 0)
+        stack.append(Card(5, "H"))
+        self.assertEqual(cribbage.scoring.stack_sum(stack), 5)
+        stack.append(Card(12, "D"))
+        self.assertEqual(cribbage.scoring.stack_sum(stack), 15)
+
+    def test_score_stack(self):
+        stack = []
+        with self.assertRaises(RuntimeError):
+            cribbage.scoring.score_stack(stack)
+
+        stack.append(Card(2, "H"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 0)
+
+        # 2H 2D --> pair scores 2
+        stack.append(Card(2, "D"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 2)
+
+        # 2H 2D 2S --> three of a kind scores 6
+        stack.append(Card(2, "S"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 6)
+
+        # 2H 2D 2S 2C --> four of a kind scores 12
+        stack.append(Card(2, "C"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 12)
+
+        # 2H 2D 2S 2C 7H --> 15 = scores 2
+        stack.append(Card(7, "H"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 2)
+
+        # 2H 2D 2S 2C 7H 6H --> 21 = no score
+        stack.append(Card(6, "H"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 0)
+
+        # 2H 2D 2S 2C 7H 6H 5H --> 26 = run of 3
+        stack.append(Card(5, "H"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 3)
+
+        # 2H 2D 2S 2C 7H 6H 5H 4H --> 30 = run of 4
+        stack.append(Card(4, "H"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 4)
+
+        # 2H 2D 2S 2C 7H 6H 5H 4H AH --> 31 = 2 points
+        stack.append(Card(1, "H"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 2)
+
+        stack = []
+        stack.append(Card(4, "H"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 0)
+        stack.append(Card(6, "H"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 0)
+        stack.append(Card(5, "H"))
+        # 15 + run of 3
+        self.assertEqual(cribbage.scoring.score_stack(stack), 5)
+        stack.append(Card(5, "D"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 2)
+        # 4 6 5 5 3 -> should not be another run
+        stack.append(Card(3, "D"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 0)
+        # 4 6 5 5 3 4 -> should a run of 3 (and no more)
+        stack.append(Card(4, "D"))
+        self.assertEqual(cribbage.scoring.score_stack(stack), 3)
+
 
 if __name__ == "__main__":
     unittest.main()

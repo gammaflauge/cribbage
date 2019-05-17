@@ -1,5 +1,4 @@
 from itertools import combinations
-from math import factorial
 
 
 def flush_check(cards):
@@ -121,6 +120,9 @@ def score_stack(cards):
     if not isinstance(cards, list):
         raise RuntimeError("score_stack needs a list")
 
+    if len(cards) == 0:
+        raise RuntimeError("call score_stack after playing a card")
+
     points = 0
     if stack_sum(cards) in [15, 31]:
         points += 2
@@ -132,7 +134,12 @@ def score_stack(cards):
             pairs += 1
         else:
             break
-    points += factorial(pairs) if pairs > 0 else 0
+    if pairs == 1:
+        points += 2
+    elif pairs == 2:
+        points += 6
+    elif pairs == 3:
+        points += 12
 
     for i in range(0, len(cards)):
         potential_run = [card.rank for card in cards[i:]]
