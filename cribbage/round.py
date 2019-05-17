@@ -85,6 +85,15 @@ class Round(object):
         if self.cut_card.rank == 11:
             self.game.update_player_score(self.get_dealer_name(), 2)
 
+    def get_player_turn(self, turn_number=1):
+        '''
+        Return the player who's turn it is to play a card.
+
+        The first turn is turn_number 1
+        '''
+        return self.game.players[
+            (self.game.dealer_seat + turn_number) % len(self.game.players)]
+
     def play_hands(self):
         '''
         Starting with the player to the right of the dealer, each player
@@ -96,37 +105,38 @@ class Round(object):
         # temporarily store a copy of player hands that we can remove cards
         # from as they are played
         temp_hands = self.player_hands
-        print(temp_hands)
-        cards_to_play = 0
-        for player in self.game.players:
-            cards_to_play += len(self.player_hands[player.name])
-        print(cards_to_play)
-        player_turn = (self.game.dealer_seat + 1) % len(self.game.players)
+        turn_number = 1
+        player = self.get_player_turn(turn_number)
         stack = []
         said_go = 0
 
-        while cards_to_play > 0:
-            player = self.game.players[player_turn]
+        while sum([len(temp_hands[player.name]) for player in self.game.players]) > 0:
             played_card = player.play_card(temp_hands[player.name], stack)
+            turn_number += 1
+
             if played_card:
-                temp_hands[player.name].remove(played_card)
+                last_to_play_card = player.name
+                temp_hands[last_to_play_card].remove(played_card)
                 stack.append(played_card)
-                points = score_stack(stack)
-                self.game.update_player_score(player.name, score_stack(stack))
-                cards_to_play -= 1
+                self.game.update_player_score(
+                    last_to_play_card, score_stack(stack))
                 said_go = 0
-                print(
-                    f"{ stack } -> { stack_sum(stack) } = { points } ({ player.name })")
             else:
                 said_go += 1
-                print(f"{ player.name } says go")
 
-            if stack_sum(stack) == 31 or said_go == len(self.game.players):
-                # reset the stack
+            if stack_sum(stack) == 31:
+                stack = []
+            elif said_go == len(self.game.players):
+                # all players said go, original player gets a point
+                self.game.update_player_score(last_to_play_card, 1)
                 stack = []
                 said_go = 0
 
-            player_turn = (player_turn + 1) % len(self.game.players)
+            player = self.get_player_turn(turn_number)
+
+        if stack_sum(stack) != 31:
+            # last card played gets a point as long as it didnt hit 31
+            self.game.update_player_score(last_to_play_card, 1)
 
     def score_hands(self):
         '''
