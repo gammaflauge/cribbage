@@ -1,13 +1,19 @@
-'''
+"""
 A card has a rank and a suit.
 52 of these make a deck
-'''
+"""
+
+from colorama import init, Fore, Style
+
+init()
 
 
 class Card(object):
     suits = ["C", "D", "H", "S"]
     ranks = range(1, 14)
     rank_display = {1: "A", 10: "T", 11: "J", 12: "Q", 13: "K"}
+    suit_codes = {"C": "\u2663", "D": "\u2666", "H": "\u2665", "S": "\u2660"}
+    suit_colors = {"C": Fore.CYAN, "D": Fore.YELLOW, "H": Fore.RED, "S": Fore.GREEN}
 
     def __init__(self, rank, suit):
         self.rank = rank
@@ -20,7 +26,17 @@ class Card(object):
             self.display = str(rank) + suit
 
     def __repr__(self):
-        return self.display
+        rank = (
+            self.rank_display[self.rank]
+            if self.rank in self.rank_display.keys()
+            else self.rank
+        )
+        return (
+            self.suit_colors[self.suit]
+            + str(rank)
+            + self.suit_codes[self.suit]
+            + Style.RESET_ALL
+        )
 
     def __str__(self):
         return self.display

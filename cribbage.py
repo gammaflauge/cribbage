@@ -1,17 +1,17 @@
 import os
 import random
 
-import pandas as pd
+# import pandas as pd
 
 from cribbage import player, game
 
 
 def run_sims(players, num_sims):
-    '''
+    """
     simulates `num_sims` standard games with the input list of players
 
     returns a dict with the winner count
-    '''
+    """
 
     total_hands = 0
 
