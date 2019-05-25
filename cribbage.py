@@ -1,6 +1,8 @@
 import os
 import random
 
+import pandas as pd
+
 from cribbage import player, game
 
 
@@ -21,8 +23,8 @@ def run_sims(players, num_sims):
     for _ in range(0, num_sims):
         my_game = game.Game(players)
         my_game.sim_game()
-        total_hands += my_game.hand_number
-        scorecard[my_game.winner][0] += 1
+        total_hands += my_game.round_number
+        scorecard[my_game.winner.name][0] += 1
         for player in players:
             scorecard[player.name][1] += player.score
 
@@ -33,7 +35,7 @@ daisy = player.NaiveBot("daisy")
 sam = player.LowBot("sam")
 char = player.HighBot("char")
 
-num_sims = 2333
+num_sims = 2500
 
 scorecard, total_hands = run_sims([daisy, sam, char], num_sims)
 
@@ -43,8 +45,12 @@ print(f"played { num_sims } games, { total_hands } hands")
 for player in scorecard:
     wins = scorecard[player][0]
     win_pct = round(wins / num_sims * 100, 2)
-    avg_score = round(scorecard[player][1] / total_hands, 1)
-    print(f"{ player } \n-- { wins } ({ win_pct }%), { avg_score } points per hand")
+    avg_hand = round(scorecard[player][1] / total_hands, 1)
+    avg_score = round(scorecard[player][1] / num_sims, 1)
+    print(
+        f"{ player } \n-- { wins } ({ win_pct }%), { avg_hand } points per hand"
+        f", { avg_score } points per game"
+    )
 
 # 10000 games
 # {'daisy': 1495, 'sam': 5663, 'char': 2842}

@@ -21,6 +21,10 @@ class Game(object):
         else:
             self.cards_per_player = 5
 
+        for player in players:
+            player.score = 0
+            player.hand = []
+
     def __repr__(self):
         player_lines = ''
         for i, player in enumerate(self.players):
