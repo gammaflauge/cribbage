@@ -3,7 +3,7 @@ import random
 
 from cribbage.card import Card
 from cribbage.game import Game
-from cribbage.player import NaiveBot
+from cribbage.player.robot import NaiveBot
 from cribbage.round import Round
 
 

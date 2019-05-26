@@ -3,7 +3,8 @@ import random
 
 # import pandas as pd
 
-from cribbage import player, game
+from cribbage import game
+from cribbage.player import robot
 
 
 def run_sims(players, num_sims):
@@ -31,11 +32,11 @@ def run_sims(players, num_sims):
     return scorecard, total_hands
 
 
-daisy = player.NaiveBot("daisy")
-sam = player.LowBot("sam")
-char = player.HighBot("char")
+daisy = robot.NaiveBot("daisy")
+sam = robot.LowBot("sam")
+char = robot.HighBot("char")
 
-num_sims = 2500
+num_sims = 250
 
 scorecard, total_hands = run_sims([daisy, sam, char], num_sims)
 

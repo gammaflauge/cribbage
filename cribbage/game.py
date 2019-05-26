@@ -1,5 +1,5 @@
 from .card import Card
-from .player import Player
+from .player.player import Player
 from .round import Round
 
 
@@ -26,14 +26,11 @@ class Game(object):
             player.hand = []
 
     def __repr__(self):
-        player_lines = ''
+        player_lines = ""
         for i, player in enumerate(self.players):
             player_lines += f"{ '*' if i == self.dealer_seat else ' '} { player }\n"
 
-        return (
-            f"Round Number: { self.round_number }\n"
-            f"{ player_lines }"
-        )
+        return f"Round Number: { self.round_number }\n" f"{ player_lines }"
 
     def update_player_score(self, player, points):
         player.score += points
@@ -49,7 +46,7 @@ class Game(object):
         self.dealer_seat = (self.dealer_seat + 1) % len(self.players)
 
     def sim_game(self):
-        assert (self.game_over == False), "Game already over!"
+        assert self.game_over == False, "Game already over!"
 
         Round(self).run_round()
         while not self.game_over:

@@ -2,7 +2,7 @@ import unittest
 import random
 
 from cribbage.game import Game
-from cribbage.player import NaiveBot
+from cribbage.player.robot import NaiveBot
 from cribbage.game import Round
 
 
@@ -17,8 +17,7 @@ class TestGame(unittest.TestCase):
         self.game_2p = Game([p1, p2])
         self.game_3p = Game([p1, p2, p3])
         self.game_4p = Game([p1, p2, p3, p4])
-        self.all_games = [self.game_1p,
-                          self.game_2p, self.game_3p, self.game_4p]
+        self.all_games = [self.game_1p, self.game_2p, self.game_3p, self.game_4p]
 
     def test_init_cards_per_player(self):
         self.assertEqual(self.game_1p.cards_per_player, 6)

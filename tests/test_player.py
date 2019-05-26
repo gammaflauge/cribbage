@@ -1,6 +1,7 @@
 import unittest
 
-from cribbage.player import Player, NaiveBot, LowBot, HighBot
+from cribbage.player.player import Player
+from cribbage.player.robot import NaiveBot, LowBot, HighBot
 from cribbage.card import Card
 
 
